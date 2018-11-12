@@ -280,49 +280,49 @@
     - command: hg --cwd /etc com -u '{{ hg.users[hg.user] }}' -A -m '{{ hg.comments.after }}'
       when: opt.com|bool and hg_st.stdout
 
-- hosts: need_upgrade
-  gather_facts: False
-
-  vars:
-    cwd: |-
-      --cwd ~/usr/etc-hg-keeper/{{ inventory_hostname }}/etc
-    opt: *opt
-      
-  tasks:
-    
-    - name: push on remote to proxy
-      delegate_to: localhost
-      register: push
-      failed_when: push.rc > 1
-      changed_when: False
-      when: opt.com|bool
-      command: ssh -A {{ ansible_ssh_host|default(inventory_hostname) }} -l root hg --cwd /etc push
-
-    - name: get id
-      delegate_to: localhost
-      register: id
-      when: opt.com|bool and push.rc == 0
-      command: ssh -A {{ ansible_ssh_host|default(inventory_hostname) }} -l root hg --cwd /etc id | awk '{print$1}'
-
-    - name: print id
-      when: opt.com|bool and push.rc == 0
-      debug: { var: id.stdout }
-
-    - name: pull on local from proxy
-      delegate_to: localhost
-      register: pull
-      check_mode: no
-      changed_when: pull.stdout.find('no changes found') == -1
-      when: opt.com|bool
-      command: hg {{ cwd }} pull
-    
-    - name: update local
-      delegate_to: localhost
-      when: opt.com|bool and pull.changed
-      command: hg {{ cwd }} update
-      
-    - name: push on local to hgweb
-      delegate_to: localhost
-      when: opt.com|bool and pull.changed
-      command: hg {{ cwd }} push hgweb
-...
+#- hosts: need_upgrade
+#  gather_facts: False
+#
+#  vars:
+#    cwd: |-
+#      --cwd ~/usr/etc-hg-keeper/{{ inventory_hostname }}/etc
+#    opt: *opt
+#      
+#  tasks:
+#    
+#    - name: push on remote to proxy
+#      delegate_to: localhost
+#      register: push
+#      failed_when: push.rc > 1
+#      changed_when: False
+#      when: opt.com|bool
+#      command: ssh -A {{ ansible_ssh_host|default(inventory_hostname) }} -l root hg --cwd /etc push
+#
+#    - name: get id
+#      delegate_to: localhost
+#      register: id
+#      when: opt.com|bool and push.rc == 0
+#      command: ssh -A {{ ansible_ssh_host|default(inventory_hostname) }} -l root hg --cwd /etc id | awk '{print$1}'
+#
+#    - name: print id
+#      when: opt.com|bool and push.rc == 0
+#      debug: { var: id.stdout }
+#
+#    - name: pull on local from proxy
+#      delegate_to: localhost
+#      register: pull
+#      check_mode: no
+#      changed_when: pull.stdout.find('no changes found') == -1
+#      when: opt.com|bool
+#      command: hg {{ cwd }} pull
+#    
+#    - name: update local
+#      delegate_to: localhost
+#      when: opt.com|bool and pull.changed
+#      command: hg {{ cwd }} update
+#      
+#    - name: push on local to hgweb
+#      delegate_to: localhost
+#      when: opt.com|bool and pull.changed
+#      command: hg {{ cwd }} push hgweb
+#...

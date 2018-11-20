@@ -23,3 +23,4 @@ inventory/*.ext
 inventory/group_vars/*/*-ext.yml
 inventory/*.tmp
 inventory/upgrade
+inventory/local
